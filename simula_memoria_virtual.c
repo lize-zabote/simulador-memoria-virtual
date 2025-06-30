@@ -263,6 +263,26 @@ int main(int argc, char *argv[]) {
     printf("%5d quadros, %7d refs: FIFO: %5d PFs, LRU: %5d PFs, OPT: %5d PFs\n",
            num_quadros, num_referencias, faltas_fifo, faltas_lru, faltas_opt);
 
+    
+    // Abre o arquivo em modo "append" (adicionar ao final).
+    // O 'a+' permite ler e escrever, e cria o arquivo se ele nao existir.
+    FILE *arquivo_csv = fopen("arquivo3.csv", "a+");
+    if (arquivo_csv == NULL) {
+        fprintf(stderr, "Erro ao abrir o arquivo CSV de saida.\n");
+        // Nao retorna erro aqui, pois a saida principal no console ja foi impressa.
+    } else {
+        // Verifica se o arquivo esta vazio para adicionar o cabecalho.
+        fseek(arquivo_csv, 0, SEEK_END);
+        long tamanho_arquivo = ftell(arquivo_csv);
+        if (tamanho_arquivo == 0) {
+            fprintf(arquivo_csv, "Quadros,FIFO,LRU,OPT\n");
+        }
+        
+        // Adiciona a linha de dados ao final do arquivo.
+        fprintf(arquivo_csv, "%d,%d,%d,%d\n", num_quadros, faltas_fifo, faltas_lru, faltas_opt);
+        fclose(arquivo_csv);
+    }
+    
     // --- 5. Libera a memoria alocada dinamicamente ---
     // Boa pratica de programacao para evitar vazamento de memoria (memory leak).
     free(referencias);
